@@ -137,13 +137,13 @@ seairhub/
         ├── fragments/               # 헤더, 사이드바 레이아웃
         ├── chat.html                # 채팅 팝업/화면
         └── index.html               # 메인 페이지
-
+```
  핵심 도메인 모델
-UserEntity: 사용자 정보 (CUS/FWD 권한 분리)
+* UserEntity: 사용자 정보 (CUS/FWD 권한 분리)
 
-RequestEntity: 화주가 등록한 화물 운송 요청 (N:1 UserEntity)
+* RequestEntity: 화주가 등록한 화물 운송 요청 (N:1 UserEntity)
 
-OfferEntity: 포워더가 입찰한 운임 견적 (N:1 RequestEntity, N:1 UserEntity)
+* OfferEntity: 포워더가 입찰한 운임 견적 (N:1 RequestEntity, N:1 UserEntity)
 
 CargoEntity / ContainerEntity: 화물 및 컨테이너 스페이스 전매 관리를 위한 모델
 
