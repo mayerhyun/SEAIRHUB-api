@@ -1,0 +1,94 @@
+/* /static/css/pages/ADM_dashboard.css */
+
+/* [추가] 대시보드 카드 그리드 */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-bottom: 40px;
+}
+
+.dashboard-card {
+    background-color: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    padding: 24px;
+}
+
+.dashboard-card h3 {
+    font-size: 18px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 16px;
+}
+
+.metric-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 16px;
+    margin-bottom: 12px;
+}
+.metric-item:last-child {
+    margin-bottom: 0;
+}
+
+.metric-label {
+    color: var(--text-color-secondary);
+}
+
+.metric-value {
+    font-weight: 700;
+    font-size: 20px;
+}
+
+/* 주요 알림 카드는 강조 */
+.alert-card .metric-value {
+    color: var(--danger-color);
+}
+
+/* 차트 섹션 */
+.chart-section {
+    background-color: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    padding: 24px;
+}
+
+.chart-section h3 {
+    font-size: 18px;
+    margin-bottom: 24px;
+}
+
+.chart-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+    height: 500px;
+}
+
+/* ... 기존 코드 ... */
+.dashboard-grid.two-columns { grid-template-columns: 1fr 1fr; }
+
+.scfi-form { display: flex; gap: 10px; }
+.scfi-form input {
+    flex-grow: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px;
+}
+.scfi-form button {
+    padding: 8px 16px; border: none; background-color: var(--dark-color);
+    color: white; border-radius: 4px; cursor: pointer;
+}
+
+.scfi-status-display { display: flex; align-items: center; gap: 20px; }
+.traffic-light {
+    width: 40px; height: 40px; border-radius: 50%;
+    background-color: #e9ecef; /* 기본 회색 */
+    border: 2px solid #ced4da;
+}
+.traffic-light.green { background-color: #28a745; border-color: #1c7430; }
+.traffic-light.red { background-color: #dc3545; border-color: #b02a37; }
+
+.status-text { display: flex; flex-direction: column; }
+#scfi-percentage { font-size: 20px; font-weight: 700; }
+#scfi-message { font-size: 14px; color: #6c757d; }

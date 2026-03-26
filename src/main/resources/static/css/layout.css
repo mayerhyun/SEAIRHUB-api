@@ -1,0 +1,405 @@
+/* css/layout.css */
+
+/* ===================================== */
+/* 1. 전체 레이아웃 (Sidebar + Main) */
+/* ===================================== */
+.container {
+    display: flex;
+    min-height: 100vh;
+    min-width: 1440px;
+    /* 서비스 전체의 최소 너비 고정 */
+}
+
+.sidebar {
+    width: 220px;
+    flex-shrink: 0;
+    background-color: #1e293b;
+    color: #cbd5e1;
+    height: 100vh;
+    position: sticky;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.main-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 1200px;
+    /* ▼▼▼ 아래 2줄을 추가해주세요 ▼▼▼ */
+    height: 100vh; /* 메인 콘텐츠 영역의 높이를 화면 전체 높이로 고정합니다. */
+    overflow: hidden; /* 이 영역 자체의 스크롤은 막습니다. */
+}
+
+/* ===================================== */
+/* 2. 사이드바 내부 스타일 */
+/* ===================================== */
+.profile {
+    padding: 24px;
+    text-align: center;
+    border-bottom: 1px solid #334155;
+}
+
+.logo-circle {
+    width: 70px;
+    height: 70px;
+    background-color: #475569;
+    border-radius: 50%;
+    margin: 0 auto 16px;
+}
+
+.profile p {
+    font-weight: 700;
+    font-size: 16px;
+    margin: 0;
+}
+
+.menu {
+    padding: 16px 0;
+}
+
+.menu a {
+    display: block;
+    padding: 12px 24px;
+    transition: background-color 0.2s;
+    font-size: 15px;
+}
+
+.menu-item.is-active>a {
+    color: white;
+    font-weight: 700;
+}
+
+.submenu {
+    padding: 8px 0;
+}
+
+.submenu a {
+    padding-left: 32px;
+    font-size: 14px;
+    color: #94a3b8;
+}
+
+.submenu a:hover {
+    color: white;
+}
+
+.submenu a.is-active {
+    color: white;
+    font-weight: 700;
+}
+
+/* ===================================== */
+/* 3. 헤더 및 메인 콘텐츠 상단 */
+/* ===================================== */
+.header {
+    background-color: white;
+    padding: 16px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+    flex-shrink: 0;
+    
+    /* ▼▼▼ 아래 4줄을 추가해주세요 ▼▼▼ */
+    position: sticky; /* 스크롤 시 위치를 고정합니다. */
+    top: 0;           /* 화면 맨 위에 붙입니다. */
+    z-index: 1000;    /* 다른 요소들보다 위에 표시되도록 z-index 값을 줍니다. */
+    background-color: white; /* 스크롤 시 다른 콘텐츠가 비치지 않도록 배경색을 지정합니다. */
+}
+
+.user-menu {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 14px;
+}
+
+.content {
+    padding: 24px 32px;
+    /* ▼▼▼ 아래 2줄을 추가해주세요 ▼▼▼ */
+    flex-grow: 1;      /* 남은 공간을 모두 차지하도록 합니다. */
+    overflow-y: auto;  /* 내용이 길어지면 이 영역만 세로 스크롤이 생깁니다. */
+}
+
+.page-title {
+    font-size: 28px;
+    font-weight: 700;
+    margin: 0 0 24px 0;
+}
+
+/* 모달 활성화 시 배경 스크롤 방지 */
+body.modal-open {
+    overflow: hidden;
+}
+
+
+
+
+/* /static/css/layout.css 파일 맨 아래에 추가 */
+
+.notification-area {
+    position: relative;
+}
+
+.notification-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 14px;
+}
+
+/* [✅ 수정] .notification-count의 position 관련 스타일을 #chat-fab 내부 배지로 이동 */
+.notification-count {
+    background-color: #FC512C;
+    color: white;
+    font-size: 11px;
+    font-weight: bold;
+    border-radius: 50%;
+    min-width: 18px; /* 최소 너비 */
+    height: 18px;
+    padding: 0 4px; /* 좌우 여백 */
+    display: none; 
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+}
+
+.notification-dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 10px;
+    width: 320px;
+    background-color: white;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    z-index: 1001;
+}
+
+.notification-header {
+    padding: 12px 16px;
+    font-weight: bold;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.notification-list {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.notification-list li {
+    padding: 12px 16px;
+    border-bottom: 1px solid #f1f3f5;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.notification-list li:last-child {
+    border-bottom: none;
+}
+
+.notification-list li:hover {
+    background-color: #f8f9fa;
+}
+
+.notification-list li.unread {
+    background-color: #f1f8ff; /* 안 읽은 알림 배경색 */
+}
+
+.notification-list li .message {
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+
+.notification-list li .timestamp {
+    font-size: 12px;
+    color: #868e96;
+}
+
+.no-notifications {
+    text-align: center;
+    color: #868e96;
+    padding: 20px;
+    cursor: default !important;
+}
+
+
+/* /static/css/layout.css 파일 맨 아래에 추가 */
+
+.notification-area {
+    position: relative;
+}
+
+.notification-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 14px;
+    padding: 4px 8px;
+}
+
+.notification-dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 10px;
+    width: 350px;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    z-index: 1010;
+}
+
+.notification-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    font-weight: bold;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.mark-all-read-btn {
+    background: none;
+    border: none;
+    color: #007bff;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.notification-list {
+    max-height: 400px;
+    overflow-y: auto;
+    padding: 0;
+    margin: 0;
+}
+
+.notification-list li {
+    list-style: none;
+    padding: 12px 16px;
+    border-bottom: 1px solid #f1f3f5;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.notification-list li:last-child {
+    border-bottom: none;
+}
+
+.notification-list li:hover {
+    background-color: #f8f9fa;
+}
+
+.notification-list li.unread {
+    background-color: #f0f8ff;
+}
+
+.notification-list li .message {
+    font-size: 14px;
+    margin-bottom: 4px;
+    color: #333;
+}
+
+.notification-list li .timestamp {
+    font-size: 12px;
+    color: #868e96;
+}
+
+.no-notifications {
+    text-align: center;
+    color: #868e96;
+    padding: 40px 20px;
+    cursor: default !important;
+}
+
+/* /static/css/layout.css 파일 맨 아래에 추가 */
+
+.btn-logout-link {
+    background: none;
+    border: none;
+    padding: 0;
+    font: inherit; /* 부모 요소의 폰트 스타일 상속 */
+    color: inherit;  /* 부모 요소의 글자색 상속 */
+    text-decoration: none; /* 밑줄 제거 */
+    cursor: pointer;
+    display: inline;
+}
+
+.btn-logout-link:hover {
+    text-decoration: underline; /* 마우스를 올리면 밑줄 표시 (선택사항) */
+}
+
+/* [✅ 수정] 채팅 위젯 관련 스타일 수정 */
+#chat-fab {
+    position: fixed; /* 화면 기준 고정 */
+    right: 40px;
+    bottom: 40px;
+    z-index: 1010;
+    width: 60px;
+    height: 60px;
+    background-color: var(--primary-color);
+    border-radius: 50%;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+#chat-fab:hover {
+    transform: translateY(-4px) scale(1.05);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
+}
+
+#chat-fab img {
+    width: 32px;
+    height: 32px;
+}
+
+#chat-fab .notification-count {
+    position: absolute;
+    top: 0;
+    right: 0;
+    transform: translate(30%, -30%);
+    border: 2px solid white;
+}
+
+#chat-widget-container {
+    position: fixed;
+    right: 40px;
+    bottom: 120px;
+    width: 650px;
+    height: 500px;
+    background-color: white;
+    border-radius: 16px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    z-index: 1009;
+    overflow: hidden;
+    display: none;
+    flex-direction: column;
+    transform-origin: bottom right;
+    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+}
+
+#chat-widget-container.is-open {
+    display: flex;
+}
+
+#chat-widget-container iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}

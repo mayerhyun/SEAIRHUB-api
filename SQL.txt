@@ -1,0 +1,167 @@
+-- 1. 사용자(users) 테이블 (건너뛰어도 됨)
+CREATE TABLE users (
+    user_seq INT AUTO_INCREMENT PRIMARY KEY,
+    provider VARCHAR(50) NOT NULL DEFAULT 'local',
+    provider_id VARCHAR(100),
+    email VARCHAR(255) NOT NULL UNIQUE,
+    user_name VARCHAR(100) NOT NULL,
+    company_name VARCHAR(100),
+    user_id VARCHAR(50) UNIQUE,
+    user_pwd VARCHAR(255),
+    phone_num VARCHAR(20),
+    business_num VARCHAR(20),
+    business_license_orig_name VARCHAR(255),
+    business_license_saved_name VARCHAR(255),
+    roles VARCHAR(50) NOT NULL,
+    approval_status varchar(20),
+    create_date DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 2. 화물(cargo) 테이블 (수정됨)
+CREATE TABLE cargo (
+    cargo_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    owner_id INT NOT NULL COMMENT '화물의 원 소유자 (최초 화주)',
+    item_name VARCHAR(255) NOT NULL,
+    incoterms VARCHAR(10) NOT NULL,
+    total_cbm DECIMAL(10, 4) NOT NULL,
+    is_dangerous BOOLEAN NOT NULL DEFAULT FALSE,
+    FOREIGN KEY (owner_id) REFERENCES users(user_seq) ON DELETE CASCADE
+);
+
+-- 3. 컨테이너(container) 테이블
+CREATE TABLE container (
+    container_id VARCHAR(30) PRIMARY KEY,
+    forwarder_id INT NOT NULL,
+    departure_port VARCHAR(100) NOT NULL,
+    arrival_port VARCHAR(100) NOT NULL,
+    etd DATE NOT NULL,
+    eta DATE NOT NULL,
+    size VARCHAR(10) NOT NULL,
+    capacity_cbm DECIMAL(10, 2) NOT NULL,
+    status VARCHAR(20) NOT NULL DEFAULT 'SCHEDULED',
+    FOREIGN KEY (forwarder_id) REFERENCES users(user_seq) ON DELETE CASCADE
+);
+
+-- 3-1. 선박 실시간 추적을 위한 IMO 번호 컬럼 추가
+ALTER TABLE container ADD COLUMN imo_number VARCHAR(20) NULL COMMENT '선박 IMO 번호';
+ALTER TABLE container ADD COLUMN completed_at DATETIME NULL COMMENT '운송 완료 시간';
+
+-- 4. 운송 요청(request) 테이블 (수정)
+-- 화물을 운송해달라는 '요청 행위'를 저장합니다. 화주 또는 포워더가 요청자가 될 수 있습니다.
+CREATE TABLE request (
+    request_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    cargo_id BIGINT NOT NULL COMMENT '어떤 화물에 대한 요청인지',
+    requester_id INT NOT NULL COMMENT '요청을 올린 사용자 (화주 또는 재판매 포워더)',
+    departure_port VARCHAR(100) NOT NULL,
+    arrival_port VARCHAR(100) NOT NULL,
+    deadline DATETIME NOT NULL,
+    trade_type VARCHAR(10) NOT NULL,
+    transport_type VARCHAR(10) NOT NULL,
+    status VARCHAR(20) NOT NULL DEFAULT 'OPEN' COMMENT 'OPEN, CLOSED, CONFIRMED',
+    -- [중요] 재판매 요청의 근원을 추적하기 위한 컬럼
+    source_offer_id BIGINT NULL COMMENT '이 요청이 재판매라면, 어떤 offer로부터 파생되었는지',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    desired_arrival_date DATE NULL comment '화주 도착 희망 날짜',
+    FOREIGN KEY (cargo_id) REFERENCES cargo(cargo_id),
+    FOREIGN KEY (requester_id) REFERENCES users(user_seq),
+    -- FOREIGN KEY (source_offer_id) REFERENCES offer(offer_id), 
+    INDEX idx_request_status_deadline (status, deadline)
+);
+
+
+-- 5. 제안/입찰(offer) 테이블 (동일)
+-- request에 대해 포워더가 제안하는 행위
+CREATE TABLE offer (
+    offer_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    request_id BIGINT NOT NULL,
+    container_id VARCHAR(30) NOT NULL,
+    forwarder_id INT NOT NULL COMMENT '제안한 포워더 ID',
+    price DECIMAL(19, 4) NOT NULL,
+    currency VARCHAR(3) NOT NULL DEFAULT 'USD',
+    status VARCHAR(20) NOT NULL DEFAULT 'PENDING' COMMENT 'PENDING, ACCEPTED, REJECTED',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (request_id) REFERENCES request(request_id),
+    FOREIGN KEY (container_id) REFERENCES container(container_id),
+    FOREIGN KEY (forwarder_id) REFERENCES users(user_seq)
+);
+
+
+-- 6. container_cargo 테이블 추가
+CREATE TABLE container_cargo (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    container_id VARCHAR(30) NOT NULL COMMENT '어느 컨테이너에 실렸는지',
+    offer_id BIGINT NULL COMMENT '플랫폼 내 거래일 경우, 근원이 되는 offer ID',
+    cbm_loaded DECIMAL(10, 4) NOT NULL COMMENT '실제 적재된 CBM',
+    is_external BOOLEAN NOT NULL DEFAULT FALSE COMMENT '외부 거래 서류 등록 건 여부',
+    external_cargo_name VARCHAR(255) NULL COMMENT '외부 거래 화물 이름',
+    freight_cost DECIMAL(19, 4) NULL,
+	freight_currency VARCHAR(3) NULL,
+    added_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (container_id) REFERENCES container(container_id),
+    FOREIGN KEY (offer_id) REFERENCES offer(offer_id),
+    INDEX idx_cc_container(container_id)
+);
+
+
+-- 7.
+ALTER TABLE request ADD CONSTRAINT fk_request_source_offer FOREIGN KEY (source_offer_id) REFERENCES offer(offer_id);
+
+
+-- 8 알림용 테이블 
+-- 알림 정보를 저장할 notification 테이블 생성
+CREATE TABLE notification (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_seq INT NOT NULL COMMENT '알림 수신자 ID',
+    message VARCHAR(255) NOT NULL COMMENT '알림 메시지',
+    url VARCHAR(255) COMMENT '클릭 시 이동할 URL',
+    is_read BOOLEAN NOT NULL DEFAULT FALSE COMMENT '읽음 여부',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '생성 시간',
+    FOREIGN KEY (user_seq) REFERENCES users(user_seq) ON DELETE CASCADE
+);
+
+
+-- =================================================================
+-- 9. 실시간 채팅 기능 테이블 추가
+-- =================================================================
+
+-- 9-1. 채팅방 테이블
+CREATE TABLE chat_room (
+    chat_room_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    offer_id BIGINT NOT NULL UNIQUE COMMENT '계약(낙찰된 제안)의 ID',
+    status VARCHAR(20) NOT NULL DEFAULT 'ACTIVE' COMMENT 'ACTIVE, CLOSED',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (offer_id) REFERENCES offer(offer_id)
+);
+
+-- 9-2. 채팅 참여자 테이블
+CREATE TABLE chat_participant (
+    participant_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    chat_room_id BIGINT NOT NULL,
+    user_seq INT NOT NULL,
+    role_in_chat VARCHAR(50) NOT NULL COMMENT '채팅방 내 역할 (e.g., REQUESTER, PROVIDER)',
+    FOREIGN KEY (chat_room_id) REFERENCES chat_room(chat_room_id),
+    FOREIGN KEY (user_seq) REFERENCES users(user_seq),
+    UNIQUE KEY uk_chatroom_user (chat_room_id, user_seq)
+);
+-- 9. 채팅방 이름 커스텀 기능을 위한 컬럼 추가
+ALTER TABLE chat_participant ADD COLUMN custom_room_name VARCHAR(255) NULL COMMENT '사용자가 설정한 채팅방 별칭';
+
+-- 9-3. 채팅 메시지 테이블
+CREATE TABLE chat_message (
+    message_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    chat_room_id BIGINT NOT NULL,
+    sender_seq INT NOT NULL,
+    message_content TEXT NOT NULL,
+    sent_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    is_read BOOLEAN NOT NULL DEFAULT FALSE,
+    FOREIGN KEY (chat_room_id) REFERENCES chat_room(chat_room_id),
+    FOREIGN KEY (sender_seq) REFERENCES users(user_seq)
+);
+
+
+-- 10. SCFI 데이터
+CREATE TABLE scfi_data (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    record_date DATE NOT NULL UNIQUE,
+    index_value DECIMAL(10, 2) NOT NULL
+);

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SEAIRHUB - 회원가입</title>
+    <link rel="stylesheet" th:href="@{/css/login.css}">
+    <script th:src="@{/js/jquery-3.7.1.js}"></script> 
+    <script defer th:src="@{/js/join.js}"></script>
+</head>
+ 
+<body>
+    <main class="login-container">
+        <!-- 로고 -->
+        <a href="/" class="logo">
+            <img th:src="@{/images/logo_long.png}" alt="SEAIRHUB">
+        </a>
+
+        <!-- ***** 이것이 유일한 <form> 태그여야 합니다 ***** -->
+        <!-- ***** [수정] form 태그에 enctype 추가 ***** -->
+        <form id="joinForm" class="login-form" action="/fwd/joinProc" method="POST" enctype="multipart/form-data">
+            <h2 style="text-align: center; margin-bottom: 30px;">
+			    <span th:if="${social_email}">소셜 계정으로 회원가입</span>
+			    <span th:unless="${social_email}">회원가입</span>
+            </h2>
+            <div class="form-group">
+                <input type="text" id="userId" name="userId" placeholder="아이디를 입력해주세요." required>
+            </div>
+            <div id="confirmId"></div>
+			<div class="form-group">
+			    <input type="email" id="email" name="email" placeholder="이메일을 입력해주세요.(abc@abc.com)" required
+			           th:value="${social_email}"
+			           th:readonly="${social_email != null}">
+			</div>
+            <div id="confirmEmail"></div>
+            <div class="form-group">
+                <input type="password" id="userPwd" name="userPwd" placeholder="비밀번호를 입력해주세요." required>
+            </div>
+            <div class="form-group">
+                <input type="password" id="userPwdConfirm" placeholder="비밀번호를 다시 입력해주세요." required>
+            </div>
+            <div id="confirmPwd"></div>
+			<div class="form-group">
+			    <input type="text" id="userName" name="userName" placeholder="이름을 입력해주세요." required>
+			</div>
+			<div class="form-group">
+			    <input type="tel" id="phoneNum" name="phoneNum" placeholder="전화번호 ('-' 없이 9~10자리)" required>
+			</div>
+			<div class="form-group">
+                <input type="text" id="companyName" name="companyName" placeholder="회사 이름을 입력해주세요." required>
+            </div>
+			<div class="form-group">
+			    <input type="text" id="businessNum" name="businessNum" placeholder="사업자등록번호를 입력해주세요." required>
+			</div>
+			<div class="form-group file-upload-group">
+			    <label for="businessLicenseFile">사업자등록증 첨부 (선택)</label>
+			    <div class="file-input-wrapper">
+			        <input type="text" readonly class="file-display" placeholder="선택된 파일 없음">
+			        <label for="businessLicenseFile" class="btn-file-select">파일 선택</label>
+			        <input type="file" id="businessLicenseFile" name="businessLicenseFile" class="hidden-file-input">
+			    </div>
+			</div>
+            <button type="button" id="joinBtn" class="btn btn-primary">회원가입</button>
+        </form>
+        <div class="signup-link">
+            <div class="divider">
+                <span>또는</span>
+            </div>
+            <a href="/login">이미 계정이 있으신가요? 로그인하기</a>
+        </div>
+    </main>
+</body>
+</html>
