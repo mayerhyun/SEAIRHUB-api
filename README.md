@@ -145,6 +145,6 @@ seairhub/
 
 * OfferEntity: 포워더가 입찰한 운임 견적 (N:1 RequestEntity, N:1 UserEntity)
 
-CargoEntity / ContainerEntity: 화물 및 컨테이너 스페이스 전매 관리를 위한 모델
+* CargoEntity / ContainerEntity: 화물 및 컨테이너 스페이스 전매 관리를 위한 모델
 
-ChatRoom / ChatMessage: 역경매 및 전매 과정에서의 협의를 위한 1:1 채팅 모델
+* ChatRoom / ChatMessage: 역경매 및 전매 과정에서의 협의를 위한 1:1 채팅 모델
